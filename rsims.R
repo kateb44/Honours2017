@@ -2,7 +2,7 @@ library(MASS)
 library(glmnet)
 library(ggplot2)
 
-#Sim1 base - show transform of tibshirani sim and tsls better
+#Sim1 base - one confounder
 dta1<-data.frame(x=1:8)
 for (j in 1:8){
   list1<-list()
@@ -387,8 +387,8 @@ for (i in 1:100){
   set.seed(i)
   z<-mvrnorm(20,rep(2,8),s)
   b<-(c(3,1.5,0,0,2,0,0,0))
-  x<-as.vector(b%*%t(z)+2*rnorm(20))
-  y<-as.vector(x+2*rnorm(20,0,2))
+  x<-as.vector(b%*%t(z)+2*rnorm(20,0,4))
+  y<-as.vector(x+2*rnorm(20,0,6))
   fit1<-lm(y~x)
   pp2<-summary(fit1)
   pp3<-pp2$coefficients[2,4]
@@ -396,8 +396,8 @@ for (i in 1:100){
   
   z<-mvrnorm(20,rep(2,8),s)
   b<-(c(3,1.5,0,0,2,0,0,0))
-  x<-as.vector(b%*%t(z)+2*rnorm(20))
-  y<-as.vector(x+2*rnorm(20,0,2))
+  x<-as.vector(b%*%t(z)+2*rnorm(20,0,4))
+  y<-as.vector(x+2*rnorm(20,0,6))
   ypre<-as.numeric(predict(fit1,as.data.frame(x)))
   list13[[length(list13)+1]]<-mean((y-ypre)^2)
 }
@@ -410,9 +410,8 @@ for (i in 1:100){
   set.seed(i)
   z<-mvrnorm(20,rep(2,8),s)
   b<-(c(3,1.5,0,0,2,0,0,0))
-  c<-rnorm(20)
-  x<-as.vector(b%*%t(z)+2*rnorm(20))
-  y<-as.vector(x+2*rnorm(20,0,2))
+  x<-as.vector(b%*%t(z)+2*rnorm(20,0,4))
+  y<-as.vector(x+2*rnorm(20,0,6))
   crossval <-  cv.glmnet(y=x,x=z)
   penalty <- crossval$lambda.min
   fit3 <-glmnet( y=x,x=z, alpha = 1, lambda = penalty )
@@ -420,16 +419,16 @@ for (i in 1:100){
   xhat<-as.vector(xhat[,1])
   fit4<-lm(y~xhat)
   pp2<-summary(fit4)
-  pp3<-pp2$coefficients[2,4]
+  pp3 = 1
+  if(nrow(coef(summary(fit4)))==2) pp3 = coef(summary(fit4))[2,4]
   tt2<-deviance(fit4)
   list2[[length(list2)+1]]<-tt2
   list4[[length(list4)+1]]<-pp3
   
   z<-mvrnorm(20,rep(2,8),s)
   b<-(c(3,1.5,0,0,2,0,0,0))
-  c<-rnorm(20)
-  x<-b%*%t(z)+2*rnorm(20)
-  y<-as.vector(x+2*rnorm(20,0,2))
+  x<-as.vector(b%*%t(z)+2*rnorm(20,0,4))
+  y<-as.vector(x+2*rnorm(20,0,6))
   
   xhat<-as.numeric(predict(fit3 ,z, s=fit3$lambda.min))
   ypre<-as.numeric(predict(fit4,as.data.frame(as.numeric(xhat))))
@@ -444,8 +443,8 @@ for (i in 1:100){
   set.seed(i)
   z<-mvrnorm(20,rep(2,8),s)
   b<-(c(3,1.5,0,0,2,0,0,0))
-  x<-as.vector(b%*%t(z)+2*rnorm(20))
-  y<-as.vector(x+2*rnorm(20,0,2))
+  x<-as.vector(b%*%t(z)+2*rnorm(20,0,4))
+  y<-as.vector(x+2*rnorm(20,0,6))
   z<-as.data.frame(cbind(z,x))
   fit1<-lm(x~.,z)
   xhat<-fit1$fitted.values
@@ -459,8 +458,8 @@ for (i in 1:100){
   
   z<-mvrnorm(20,rep(2,8),s)
   b<-(c(3,1.5,0,0,2,0,0,0))
-  x<-as.vector(b%*%t(z)+2*rnorm(20))
-  y<-as.vector(x+2*rnorm(20,0,2))
+  x<-as.vector(b%*%t(z)+2*rnorm(20,0,4))
+  y<-as.vector(x+2*rnorm(20,0,6))
   z<-cbind(z,x)
   xhat<-as.numeric(predict(fit1,as.data.frame(z[,1:8])))
   ypre<-as.numeric(predict(fit2,as.data.frame(xhat)))
@@ -476,8 +475,8 @@ for (i in 1:100){
   set.seed(i)
   z<-mvrnorm(20,rep(2,8),s)
   b<-(c(3,1.5,0,0,2,0,0,0))
-  x<-as.vector(b%*%t(z)+2*rnorm(20))
-  y<-as.vector(x+2*rnorm(20,0,2))
+  x<-as.vector(b%*%t(z)+2*rnorm(20,0,4))
+  y<-as.vector(x+2*rnorm(20,0,6))
   x = x-mean(x)
   z = t(t(z)-colMeans(z))
   fit5 <-  cv.glmnet(z,x,keep=TRUE,nfolds = length(x),intercept=FALSE)
@@ -492,8 +491,8 @@ for (i in 1:100){
   
   z<-mvrnorm(20,rep(2,8),s)
   b<-(c(3,1.5,0,0,2,0,0,0))
-  x<-as.vector(b%*%t(z)+2*rnorm(20))
-  y<-as.vector(x+2*rnorm(20,0,2))
+  x<-as.vector(b%*%t(z)+2*rnorm(20,0,4))
+  y<-as.vector(x+2*rnorm(20,0,6))
   x = x-mean(x)
   z = t(t(z)-colMeans(z))
   
@@ -544,8 +543,8 @@ for (i in 1:100){
   set.seed(i)
   z<-mvrnorm(20,rep(2,8),s)
   b<-(c(3,1.5,0,0,2,0,0,0))
-  x<-as.vector(b%*%t(z)+2*rnorm(20))
-  y<-as.vector(2*rnorm(20,0,2))
+  x<-as.vector(b%*%t(z)+2*rnorm(20,0,4))
+  y<-as.vector(2*rnorm(20,0,6))
   fit1<-lm(y~x)
   pp2<-summary(fit1)
   pp3<-pp2$coefficients[2,4]
@@ -553,8 +552,8 @@ for (i in 1:100){
   
   z<-mvrnorm(20,rep(2,8),s)
   b<-(c(3,1.5,0,0,2,0,0,0))
-  x<-as.vector(b%*%t(z)+2*rnorm(20))
-  y<-as.vector(2*rnorm(20,0,2))
+  x<-as.vector(b%*%t(z)+2*rnorm(20,0,4))
+  y<-as.vector(2*rnorm(20,0,6))
   ypre<-as.numeric(predict(fit1,as.data.frame(x)))
   list13[[length(list13)+1]]<-mean((y-ypre)^2)
 }
@@ -568,8 +567,8 @@ for (i in 1:100){
   set.seed(i)
   z<-mvrnorm(20,rep(2,8),s)
   b<-(c(3,1.5,0,0,2,0,0,0))
-  x<-as.vector(b%*%t(z)+2*rnorm(20))
-  y<-as.vector(2*rnorm(20,0,2))
+  x<-as.vector(b%*%t(z)+2*rnorm(20,0,4))
+  y<-as.vector(2*rnorm(20,0,6))
   crossval <-  cv.glmnet(y=x,x=z)
   penalty <- crossval$lambda.min
   fit3 <-glmnet( y=x,x=z, alpha = 1, lambda = penalty )
@@ -577,15 +576,16 @@ for (i in 1:100){
   xhat<-as.vector(xhat[,1])
   fit4<-lm(y~xhat)
   pp2<-summary(fit4)
-  pp3<-pp2$coefficients[2,4]
+  pp3<-1
+  if(nrow(coef(summary(fit4)))==2) pp3 = coef(summary(fit4))[2,4]
   tt2<-deviance(fit4)
   list2[[length(list2)+1]]<-tt2
   list4[[length(list4)+1]]<-pp3
   
   z<-mvrnorm(20,rep(2,8),s)
   b<-(c(3,1.5,0,0,2,0,0,0))
-  x<-b%*%t(z)+2*rnorm(20)
-  y<-as.vector(2*rnorm(20,0,2))
+  x<-as.vector(b%*%t(z)+2*rnorm(20,0,4))
+  y<-as.vector(2*rnorm(20,0,6))
   
   xhat<-as.numeric(predict(fit3 ,z, s=fit3$lambda.min))
   ypre<-as.numeric(predict(fit4,as.data.frame(as.numeric(xhat))))
@@ -600,7 +600,7 @@ for (i in 1:100){
   set.seed(i)
   z<-mvrnorm(20,rep(2,8),s)
   b<-(c(3,1.5,0,0,2,0,0,0))
-  x<-as.vector(b%*%t(z)+2*rnorm(20))
+  x<-as.vector(b%*%t(z)+2*rnorm(20,0,4))
   y<-as.vector(2*rnorm(20,0,2))
   z<-as.data.frame(cbind(z,x))
   fit1<-lm(x~.,z)
@@ -615,8 +615,8 @@ for (i in 1:100){
   
   z<-mvrnorm(20,rep(2,8),s)
   b<-(c(3,1.5,0,0,2,0,0,0))
-  x<-as.vector(b%*%t(z)+2*rnorm(20))
-  y<-as.vector(2*rnorm(20,0,2))
+  x<-as.vector(b%*%t(z)+2*rnorm(20,0,4))
+  y<-as.vector(2*rnorm(20,0,6))
   z<-cbind(z,x)
   xhat<-as.numeric(predict(fit1,as.data.frame(z[,1:8])))
   ypre<-as.numeric(predict(fit2,as.data.frame(xhat)))
@@ -632,8 +632,8 @@ for (i in 1:100){
   set.seed(i)
   z<-mvrnorm(20,rep(2,8),s)
   b<-(c(3,1.5,0,0,2,0,0,0))
-  x<-as.vector(b%*%t(z)+2*rnorm(20))
-  y<-as.vector(2*rnorm(20,0,2))
+  x<-as.vector(b%*%t(z)+2*rnorm(20,0,4))
+  y<-as.vector(2*rnorm(20,0,6))
   x = x-mean(x)
   z = t(t(z)-colMeans(z))
   fit5 <-  cv.glmnet(z,x,keep=TRUE,nfolds = length(x),intercept=FALSE)
@@ -648,8 +648,8 @@ for (i in 1:100){
   
   z<-mvrnorm(20,rep(2,8),s)
   b<-(c(3,1.5,0,0,2,0,0,0))
-  x<-as.vector(b%*%t(z)+2*rnorm(20))
-  y<-as.vector(2*rnorm(20,0,2))
+  x<-as.vector(b%*%t(z)+2*rnorm(20,0,4))
+  y<-as.vector(2*rnorm(20,0,6))
   x = x-mean(x)
   z = t(t(z)-colMeans(z))
   
@@ -7728,4 +7728,3 @@ p = c(ap8,ap9)
 ord = order(p)
 points(cumsum(1-class[ord])/sum(1-class),cumsum(class[ord])/sum(class),col="palegreen",type = 'l',lwd=4)
 legend('bottomright',c('TSL','TSLS','TSPL','LIML'),col = c("darkblue","skyblue","darkgreen","palegreen"),lty = 1,cex=1,lwd=3)
-
