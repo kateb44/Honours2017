@@ -1,6 +1,7 @@
 # Honours2017
-R-code for my thesis
-University of Sydney
-Supervised by Ellis Patrick
+R-code for my thesis; supervised by Dr Ellis Patrick at the University of Sydney
 
-The simulations of the two stage least squares (TSLS), two stage lasso (TSL) and tow stage pre-validated lasso (TSPL) are in the sims 
+
+The simulations of the two stage least squares (TSLS), two stage lasso (TSL) and tow stage pre-validated lasso (TSPL) are in the rsims.R file.
+
+The application to the Alzheimers data can be found in ?
