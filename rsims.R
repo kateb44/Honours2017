@@ -1,8 +1,11 @@
 library(MASS)
 library(glmnet)
 library(ggplot2)
+#z=instruments, c=confounders, x=exposure, y=outcome
 
-#Sim1 base - one confounder
+#one confounder
+
+#covariance matrix for instruments
 dta1<-data.frame(x=1:8)
 for (j in 1:8){
   list1<-list()
@@ -14,6 +17,7 @@ for (j in 1:8){
 }
 s<-matrix(c(dta1[,2],dta1[,3],dta1[,4],dta1[,5],dta1[,6],dta1[,7],dta1[,8],dta1[,9]),ncol=8,nrow=8)
 
+#OLS method
 list12<-list()
 list13<-list()
 for (i in 1:100){
@@ -38,7 +42,7 @@ for (i in 1:100){
 }
 ap6<-unlist(list12)
 
-
+#TSL method
 list2<-list()
 list4<-list()
 list6<-list()
@@ -74,6 +78,7 @@ for (i in 1:100){
 }
 ap<-unlist(list4)
 
+#TSLS method
 list1<-list()
 list3<-list()
 list5<-list()
@@ -108,6 +113,7 @@ for (i in 1:100){
 
 ap2<-unlist(list3)
 
+#TSPL method
 list8<-list()
 list9<-list()
 list10<-list()
@@ -145,6 +151,7 @@ for (i in 1:100){
 
 ap4<-unlist(list8)
 
+#MSE plot when there is association btw x and y
 lasso.mse<-as.numeric(unlist(list6))
 ols.mse<-as.numeric(unlist(list5))
 pv.mse<-as.numeric(unlist(list9))
@@ -154,6 +161,7 @@ mse<-as.data.frame(cbind(v,c(ols.mse,lasso.mse,pv.mse,ol.mse)))
 mse[,2]<- as.numeric(as.character(mse[,2]))
 ggplot(mse,aes(x=mse$v,y=mse[,2],group=mse$v))+scale_y_continuous(limits = c(0, 500))+geom_boxplot(fill=c("palegreen","darkblue","skyblue","darkgreen"))+labs(x="Model",y="MSE",title="Association between X and Y")+theme(plot.title = element_text(hjust = 0.5))
 
+#true pos and false neg
 fnn<-list4>0.05
 fn<-length(fnn[fnn=="TRUE"])
 tp<-100-fn
@@ -312,6 +320,7 @@ for (i in 1:100){
 
 ap5<-unlist(list8)
 
+#MSE plot when x and y are not associated
 lasso.mse<-as.numeric(unlist(list6))
 ols.mse<-as.numeric(unlist(list5))
 pv.mse<-as.numeric(unlist(list9))
@@ -340,11 +349,13 @@ mcc<-function(a,b,c,d){
 }
 #a=tp b=tn c=fp d=fn
 
+#Matthews coefficient correlation
 mcc(tp,tn,fp,fn)
 mcc(tp1,tn1,fp1,fn1)
 mcc(tp2,tn2,fp2,fn2)
 mcc(tp3,tn3,fp3,fn3)
 
+#box plot of p-values
 df<-as.data.frame(cbind(as.numeric(c(ap,ap1,ap2,ap3,ap4,ap5)),as.factor(c(rep("Ass",100),rep("No Ass",100))),(c(rep("TSL",200),rep("TSLS",200),rep("TSPL",200)))))
 colnames(df)<-c("p.value","ass","method")
 df[,1]<- as.numeric(as.character(df[,1]))
