@@ -1,6 +1,7 @@
 library(MASS)
 library(glmnet)
 library(ggplot2)
+library(ivmodel)
 #z=instruments, c=confounders, x=exposure, y=outcome
 
 #one confounder
